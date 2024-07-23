@@ -47,7 +47,7 @@ tft_bl   = board.A2
 spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
 
 
-# Make the displayio SPI bus and the GC9A01 display
+# Make the displayio SPI bus and the display
 display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
 display = adafruit_st7735.ST7735(display_bus, width=128, height=160, backlight_pin=tft_bl)
 
@@ -74,7 +74,7 @@ group.append(bg_sprite)
 while True:
     pass
     #set_backlight(1.0)
-    #gc.collect()
+    gc.collect()
     #print('Range: {}mm'.format(gammaQuad.range))
     #print('Range1: {}mm'.format(gammaQuad1.range))
     #print('Range2: {}mm'.format(gammaQuad2.range))
