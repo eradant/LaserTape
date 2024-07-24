@@ -19,12 +19,13 @@ import adafruit_st7735r
 #from adafruit_bitmap_font import bitmap_font
 from adafruit_display_text import label, wrap_text_to_lines
 #from circuitpython_uplot.plot import Plot, color
+
 ##################################################################################################################################
 displayio.release_displays()
 ##################################################################################################################################
-# Create I2C bus as normal
+# Create I2C bus 
+
 i2c = board.I2C()  # uses board.SCL and board.SDA
-# i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
 
 # Create the TCA9548A object and give it the I2C bus
 tca = adafruit_tca9548a.TCA9548A(i2c)
@@ -34,8 +35,9 @@ gammaQuad = adafruit_vl53l0x.VL53L0X(tca[0])
 gammaQuad1 = adafruit_vl53l0x.VL53L0X(tca[1])
 gammaQuad2 = adafruit_vl53l0x.VL53L0X(tca[7])
 gammaQuad3 = adafruit_vl53l0x.VL53L0X(tca[6])
-##################################################################################################################################
 
+##################################################################################################################################
+#Pin assignments
 
 tft_clk  = board.SCK
 tft_mosi = board.MOSI
@@ -45,18 +47,25 @@ tft_cs   = board.A3
 tft_bl   = board.A2
 spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
 
-
-# Make the displayio SPI bus and the GC9A01 display
+# Make the displayio SPI bus and the st7735 display
 display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
-display = adafruit_st7735r.ST7735R(display_bus, width=132, height=160, backlight_pin=tft_bl)
+display = adafruit_st7735r.ST7735R(display_bus, width=132, height=160, backlight_pin=tft_bl)#listed width is 128, but seems to be 4 pixels wider
+
+#################################################################################################################################
+#Backlight intensity function
 
 def set_backlight(val):
     val = max(0, min(1.0, val))
     display.auto_brightness = False
     display.brightness = val
 #################################################################################################################################
+#Create display group
+
 group = displayio.Group()
 display.root_group = group
+
+##################################################################################################################################
+#color palette
 
 yellow = 0xC19C00
 brightYellow = 0xF9F1A5
@@ -72,7 +81,13 @@ green = 0x16C60C
 aqua = 0x00FFFF
 grey = 0x4A4A4A
 
+##################################################################################################################################
+#Fonts
+
 font = terminalio.FONT
+
+###################################################################################################################################
+#text labels
 
 text_f = " "
 f_text = label.Label(font, text=text_f, color=white)
@@ -100,13 +115,6 @@ group.append(t_text)
 
 group.scale = 2
 
-gc.collect()
-#################################################################################################################################
-
-gc.collect()
-
-##################################################################################################################################
-
 # After initial setup, can just use sensors as normal.
 while True:
     pass
@@ -116,12 +124,7 @@ while True:
     t_text.text = "R: {0}mm".format(gammaQuad3.range)
     gc.collect()
     #set_backlight(1.0)
-    #gc.collect()
-    #print('Range: {}mm'.format(gammaQuad.range))
-    #print('Range1: {}mm'.format(gammaQuad1.range))
-    #print('Range2: {}mm'.format(gammaQuad2.range))
-    #print('Range3: {}mm'.format(gammaQuad3.range))
-    time.sleep(.5)# Write your code here :-)
+    time.sleep(.5)
     
 
 
